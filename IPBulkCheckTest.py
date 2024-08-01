@@ -11,7 +11,7 @@ class IPBulkCheckTest(Script):
 
     def run(self, data, commit):
 
-        for addresses in IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE):
+        for address in IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE):
             if address.dns_name is not None:
                 self.log_success(f"{address.dns_name} belongs to {address}")
             else:
