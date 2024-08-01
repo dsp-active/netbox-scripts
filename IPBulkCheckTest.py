@@ -15,4 +15,4 @@ class IPBulkCheckTest(Script):
             if address.dns_name is not None and address.dns_name != "":
                 self.log_success(f"{address.dns_name} belongs to {address}")
             else:
-                self.log_failure(f"{address} does not have a set DNS name.")
+                self.log_info(f"{address} does not have a set DNS name.")
