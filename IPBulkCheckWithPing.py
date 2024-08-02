@@ -22,7 +22,7 @@ class IPBulkCheckWithPing(Script):
                 self.log_info(f"Testing {address.dns_name} @ {address} ...")
                 try:
                     # send ping to dns
-                    check = ping(str(address.dns_name), count=3, interval=0.2, privileged=False))
+                    check = ping(str(address.dns_name), count=3, interval=0.2, privileged=False)
                     
                     # compare ip from dns controller to registered ip
                     if str(address.address) in str(check):
