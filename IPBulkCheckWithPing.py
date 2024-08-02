@@ -30,10 +30,10 @@ class IPBulkCheckWithPing(Script):
                         self.log_warning(f"Registered IP and DNS do NOT match!")
                     
                     # check if ping was successful or not
-                    if 'received: 0' in str(check):
-                        self.log_warning(f"Ping failed!")
+                    if check.is_alive == True:
+                        self.log_warning(f"Ping was successful.")
                     else:
-                        self.log_success(f"Ping was successful.")
+                        self.log_success(f"Ping failed!")
                 except:
                     self.log_warning(f"No DNS entry found!")
             else:
