@@ -3,7 +3,7 @@ from extras.scripts import *
 from ipam.models import IPAddress
 from ipam.choices import IPAddressStatusChoices
 
-from icmplib import ping
+#from icmplib import ping
 
 #--------------------
 
