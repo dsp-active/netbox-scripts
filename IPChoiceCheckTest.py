@@ -24,7 +24,7 @@ class IPChoiceCheckTest(Script):
 
         self.log_info(f"{data['ip_choice']} ausgewählt.")
 
-        #ip = IPAddress.objects.get(address=data['ip_choice'])
+        #ip = IPAddress.objects.get(address=data['ip_choice']) - Does not work on its own :/ Maybe without 'address'?
 
         for ip in data['ip_choice']:
             if ip.dns_name is not None and ip.dns_name != "":
