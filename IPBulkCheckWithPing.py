@@ -3,16 +3,14 @@ from extras.scripts import *
 from ipam.models import IPAddress
 from ipam.choices import IPAddressStatusChoices
 
-#from icmplib import ping
+from icmplib import ping
 
 #--------------------
-
-# needs to run "docker compose exec -u root netbox /opt/netbox/venv/bin/python -m pip install icmplib" first!
 
 class IPBulkCheckWithPing(Script):
     class Meta:
         name = "IP x DNS Bulk Check with Ping"
-        description = "Test every IP address and its corresponding dns-name against each other using Ping"
+        description = "Test every IP address and its assigned dns-name against each other using Ping"
         commit_default = False
 
     def run(self, data, commit):
