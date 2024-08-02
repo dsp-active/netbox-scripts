@@ -19,6 +19,8 @@ class IPChoiceCheckTest(Script):
 
     def run(self, data, commit):
 
+        self.log_info(f"{ip_choice} ausgewählt.")
+
         ip = IPAddress.objects.get(address=data['ip_choice'])
 
         if ip.dns_name is not None and ip.dns_name != "":
