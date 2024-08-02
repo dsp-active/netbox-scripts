@@ -19,7 +19,7 @@ class IPChoiceCheckTest(Script):
 
     def run(self, data, commit):
 
-        self.log_info(f"{ip_choice} ausgewählt.")
+        self.log_info(f"{data['ip_choice']} ausgewählt.")
 
         ip = IPAddress.objects.get(address=data['ip_choice'])
 
