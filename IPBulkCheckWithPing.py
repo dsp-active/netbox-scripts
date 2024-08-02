@@ -9,7 +9,7 @@ from icmplib import ping
 
 # needs to run "docker compose exec -u root netbox /opt/netbox/venv/bin/python -m pip install icmplib" first!
 
-class IPBulkCheckTest(Script):
+class IPBulkCheckWithPing(Script):
     class Meta:
         name = "IP x DNS Bulk Check + Ping"
         description = "Test every IP address and its corresponding dns-name against each other using Ping"
