@@ -19,16 +19,13 @@ class IPBulkCheckWithPing(Script):
             if address.dns_name is not None and address.dns_name != "":
                 self.log_info(f"Testing {address.dns_name} against {address} ...")
                 try:
-                    # send ping to dns
                     check = ping(str(address.dns_name), count=3, interval=0.2, privileged=False)
                     
-                    # compare ip from dns controller to registered ip
                     if str(address.address) in str(check):
                         self.log_success(f"Registered IP and DNS match.")
                     else:
                         self.log_warning(f"Registered IP and DNS do NOT match!")
-                    
-                    # check if ping succeeded
+
                     if 'received: 0' in str(check):
                         self.log.warning(f"Ping failed!")
                     else:
