@@ -11,7 +11,7 @@ from icmplib import ping
 
 class IPBulkCheckWithPing(Script):
     class Meta:
-        name = "IP x DNS Bulk Check + Ping"
+        name = "IP x DNS Bulk Check with Ping"
         description = "Test every IP address and its corresponding dns-name against each other using Ping"
         commit_default = False
 
@@ -19,7 +19,7 @@ class IPBulkCheckWithPing(Script):
 
         for address in IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE):
             if address.dns_name is not None and address.dns_name != "":
-                self.log_info(f"Testing {address.dns_name} @ {address} ...")
+                self.log_info(f"Testing {address.dns_name} against {address} ...")
                 try:
                     # send ping to dns
                     check = ping(str(address.dns_name), count=3, interval=0.2, privileged=False)
