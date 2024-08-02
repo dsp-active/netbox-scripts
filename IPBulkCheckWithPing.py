@@ -31,9 +31,9 @@ class IPBulkCheckWithPing(Script):
                     
                     # check if ping was successful or not
                     if check.is_alive == True:
-                        self.log_warning(f"Ping was successful.")
+                        self.log_success(f"Ping was successful.")
                     else:
-                        self.log_success(f"Ping failed!")
+                        self.log_warning(f"Ping failed!")
                 except:
                     self.log_warning(f"No DNS entry found!")
             else:
