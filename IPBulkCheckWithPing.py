@@ -17,7 +17,9 @@ class IPBulkCheckWithPing(Script):
 
         for address in IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE):
             if address.dns_name is not None and address.dns_name != "":
+                self.log_info(f"---------------------------------")
                 self.log_info(f"Testing {address.dns_name} against {address} ...")
+                self.log_info(f"---------------------------------")
                 try:
                     # test ping
                     check = ping(str(address.dns_name), count=2, interval=0.2, timeout=2, privileged=False)
@@ -25,13 +27,13 @@ class IPBulkCheckWithPing(Script):
                     # compare dns-ip to registered ip
                     trim_ip = str(address.address).split('/')[0]
                     if trim_ip in str(check):
-                        self.log_success(f"Registered IP and DNS match.")
+                        self.log_success(f"Registered IP and DNS match")
                     else:
                         self.log_warning(f"Registered IP and DNS do NOT match!")
                     
                     # check if ping was successful or not
                     if check.is_alive == True:
-                        self.log_success(f"Ping was successful.")
+                        self.log_success(f"Ping was successful")
                     else:
                         self.log_warning(f"Ping failed!")
                 except:
