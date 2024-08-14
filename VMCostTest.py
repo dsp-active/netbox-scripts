@@ -37,7 +37,7 @@ class VMCostTest(Script):
         for vm in data['vm_choice']:
             if vm.vcpus is not None and vm.vcpus != "":
                 self.log_info(f"{vm} has {vm.vcpus} vCores assigned to it.")
-                calc = "{:.2f}".format(float(vcore_price * vm.vcpus))
+                calc = "{:.2f}".format(float(vcore_price * float(vm.vcpus)))
                 self.log_success(f"{vm} therefore costs {calc}€ per month.")
             else:
                 self.log_warning(f"{vm} does not have a set amount of vCores.")
