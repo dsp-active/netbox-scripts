@@ -45,6 +45,7 @@ class VMCostTest(Script):
         # regex to float
         vcore_price = float(data['vcore_price'])
         ram_price = float(data['ram_price'])
+        storage_price = float(data['storage_price'])
         
         # cost calc
         for vm in data['vm_choice']:
