@@ -45,17 +45,17 @@ class VMCostTest(Script):
             if vm.vcpus is not None and vm.vcpus != "":
                 self.log_info(f"{vm} has {vm.vcpus} vCores assigned to it.")
                 calcCores = "{:.2f}".format(float(vcore_price * float(vm.vcpus))) # 2 digit float is kind of unnecessary here ^^
-                total = calcCores
+                self.log_success(f"{vm.vcpus} vCore/s cost/s {calcCores}€ per month.")
                 if vm.memory is not None and vm.memory != "":
                     memX = str(vm.memory)[:-3] # zB 4096 -> 4, 16.384 -> 16, 512 -> "" ^^
                     if memX == "":
                         memX = "less than 1"
                     self.log_info(f"{vm} has {memX}GB of RAM assigned to it.")
-                    calcRam = "{:.2f}".format(float(ram_price * float(str(vm.memory)[:-3]))) #Umrechnung!
-                    total += calcRam
+                    calcRam = "{:.2f}".format(float(ram_price * float(str(vm.memory)[:-3])))
+                    self.log_success(f"{memX}GB/s of RAM cost/s {calcRam}€ per month.")
                 else:
                     self.log_warning(f"{vm} does not have a set amount of RAM!")
-                self.log_success(f"{vm} therefore costs {total}€ per month.")
+                self.log_success(f"{vm} therefore costs {calcCores+calcRam}€ in total per month.")
             else:
                 self.log_warning(f"{vm} does not have a set amount of vCores!")
         
