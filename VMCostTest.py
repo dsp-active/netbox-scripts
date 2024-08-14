@@ -57,7 +57,7 @@ class VMCostTest(Script):
                     total += float(calcRam)
                 else:
                     self.log_warning(f"{vm} does not have a set amount of RAM!")
-                self.log_success(f"#___________{vm} therefore costs {total}€ in total per month.")
+                self.log_success(f"#{vm} therefore costs {total}€ in total per month.")
             else:
                 self.log_warning(f"{vm} does not have a set amount of vCores!")
         
