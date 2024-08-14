@@ -39,6 +39,8 @@ class VMCostTest(Script):
         min_length = 4,
         regex = "^[0-9]+[.]{1}[0-9]{2}"
     )
+    
+    #--------------------
 
     def run(self, data, commit):
         
@@ -71,7 +73,7 @@ class VMCostTest(Script):
                 # calc storage
                 if vm.disk is not None and vm.disk != "":
                     self.log_info(f"{vm} has {vm.disk}GBs of storage space assigned to it.")
-                    calcStorage = "{:.2f}".format(float(storage_price * float(vm.disk))
+                    calcStorage = "{:.2f}".format(float(storage_price * float(vm.disk)))
                     self.log_success(f"{vm.disk}GBs of storage space cost {calcStorage}€ per month.")
                     total += float(calcStorage)
                 else:
