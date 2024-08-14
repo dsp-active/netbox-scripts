@@ -33,7 +33,7 @@ class IPBulkCheckWithPing(Script):
                     if check.is_alive == True:
                         self.log_success(f"Ping was successful")
                     else:
-                        self.log_warning(f"Ping failed!")
+                        self.log_warning(f"Ping failed - Host is unreachable!")
                 except:
                     self.log_warning(f"No DNS entry found!")
             else:
