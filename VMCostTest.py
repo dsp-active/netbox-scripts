@@ -23,7 +23,7 @@ class VMCostTest(Script):
     # there is no Float or DecimalVar for whatever reason~
     vcore_price = StringVar(
         description = "Cost for a single assigned vCore in the following format: X.XX",
-        default = "1.00"
+        default = "1.00",
         min_length = 4,
         regex = "^[0-9]+[.]{1}[0-9]{2}" # starts with 1 or more numbers followed by 1 dot and 2 more numbers
     )
