@@ -11,7 +11,7 @@ class VMCostTest(Script):
         description = "Calculate a given VMs cost based on its used ressources like vCores and RAM."
         commit_default = False
         
-    vm_choice = ObjectVar(
+    vm_choice = MultiObjectVar(
         description = "Choose a VM",
         model = VirtualMachine,
         required = True,
@@ -41,3 +41,6 @@ class VMCostTest(Script):
                 self.log_success(f"{vm} therefore costs {calc}€ per month.")
             else:
                 self.log_warning(f"{vm} does not have a set amount of vCores.")
+        
+        # formatting
+        self.log_info(f"--------------------------")
