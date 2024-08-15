@@ -80,6 +80,7 @@ class VMCostTest(Script):
                     self.log_warning(f"{vm} does not have a set amount of storage!")
                 
                 # output
+                total = "{:.2f}".format(total)
                 self.log_success(f"#{vm} therefore costs {total}€ in total per month.")
             else:
                 self.log_warning(f"{vm} does not have a set amount of vCores!")
