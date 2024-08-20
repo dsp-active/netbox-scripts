@@ -29,7 +29,7 @@ class CheckJSONServiceTest(Script):
 
         # get & check services
         for vm in data['vm_choice']:
-            test = vm ( custom_field_data )
+            test = vm ( custom_field_data['test_config'] )
             print(test)
         
         # formatting
