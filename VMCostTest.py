@@ -81,7 +81,7 @@ class VMCostTest(Script):
                 
                 # output
                 total = "{:.2f}".format(total)
-                self.log_success(f"#{vm} therefore costs {total}€ in total per month.")
+                self.log_success(f"#{vm} therefore costs {total}€ per month in total.")
             else:
                 self.log_warning(f"{vm} does not have a set amount of vCores!")
         

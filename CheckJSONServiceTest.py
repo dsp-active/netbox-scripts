@@ -13,7 +13,7 @@ class CheckJSONServiceTest(Script):
         name = "Test the JSON Config of chosen services"
         description = "Use the JSON Schema library to check the JSON content of the config custom field."
         commit_default = False
-    
+
     vm_choice = MultiObjectVar(
         description = "Choose a VM",
         model = VirtualMachine,
