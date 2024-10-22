@@ -30,8 +30,10 @@ class CheckJSONServiceTest(Script):
         # get & check services
         for vm in data['vm_choice']:
             
-            # read custom data
-            self.log_success(f"{vm} has the following config: {vm.custom_field_data}")
+            services = Service.objects.filter(virtual_machine=vm.id)
+            
+            for s in services:
+                self.log_success(f"{vm} has the following service: {s}")
 
             # formatting
             self.log_info(f"--------------------------")
