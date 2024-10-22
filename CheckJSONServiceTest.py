@@ -30,14 +30,8 @@ class CheckJSONServiceTest(Script):
         # get & check services
         for vm in data['vm_choice']:
             
-            # Services auslesen, diese dann erneut abfragen als Loop!
-            test = vm ( custom_field_data['test_config'] )
-            print(test)
-            
-            #IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE)
-            # wie sprech ich den Mist an? ^^
-            #for dienst in Service.objects.filter(Service.custom_field_data['test_config'] != ""):
-            #    print(dienst,"hat eine gesetzte Konfig.")
-            
+            # read custom data
+            self.log_success(f"{vm} has the following config: {vm.custom_field_data}")
+
             # formatting
             self.log_info(f"--------------------------")
