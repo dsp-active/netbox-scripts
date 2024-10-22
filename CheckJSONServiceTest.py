@@ -31,13 +31,13 @@ class CheckJSONServiceTest(Script):
         for vm in data['vm_choice']:
             
             # Services auslesen, diese dann erneut abfragen als Loop!
-            #test = vm ( custom_field_data['test_config'] )
-            #print(test)
-            #IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE)
+            test = vm ( custom_field_data['test_config'] )
+            print(test)
             
+            #IPAddress.objects.filter(status=IPAddressStatusChoices.STATUS_ACTIVE)
             # wie sprech ich den Mist an? ^^
-            for dienst in Service.objects.filter(Service.custom_field_data['test_config'] != ""):
-                print(dienst,"hat eine gesetzte Konfig.")
+            #for dienst in Service.objects.filter(Service.custom_field_data['test_config'] != ""):
+            #    print(dienst,"hat eine gesetzte Konfig.")
             
             # formatting
             self.log_info(f"--------------------------")
