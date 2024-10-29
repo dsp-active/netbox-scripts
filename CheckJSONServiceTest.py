@@ -4,7 +4,19 @@ from virtualization.models import VirtualMachine
 from virtualization.choices import VirtualMachineStatusChoices
 from ipam.models import Service
 
-#from jsonschema import validate
+from jsonschema import validate
+
+#--------------------
+
+schema = {
+    "type": "object",
+    "properties": {
+        "app": {"type": "string", "minLength": 1},
+        "user": {"type": "string", "minLength": 1}
+    },
+    "required": ["app"],
+    "additionalProperties": False,
+}
 
 #--------------------
 
@@ -26,16 +38,18 @@ class CheckJSONServiceTest(Script):
     #--------------------
 
     def run(self, data, commit):
-
-        # get & check services
+        
         for vm in data['vm_choice']:
-            
+            # get all services that match the chosen vm
             services = Service.objects.filter(virtual_machine=vm.id)
             
             for s in services:
-                self.log_success(f"{vm} has the following service: {s}")
-                test = s.get_custom_fields()
-                self.log_info(f"{test}")
-
-            # formatting
-            self.log_info(f"--------------------------")
+                # list services
+                self.log_info(f"{vm} has the following service: {s}")
+                
+                # Check custom data, get config & validate against scheme
+                conf = s.get_custom_fields()
+                self.log_info(f"{conf}")
+                
+                # formatting
+                self.log_info(f"--------------------------")
