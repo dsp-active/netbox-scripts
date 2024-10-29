@@ -49,7 +49,7 @@ class CheckJSONServiceTest(Script):
                 
                 # Check custom data, get config & validate against scheme
                 customData = s.get_custom_fields()
-                self.log_info(f"custom data: {customData} // config: {customData.config}")
+                self.log_info(f"custom data: {customData}")
                 
                 
                 # formatting
