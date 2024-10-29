@@ -51,7 +51,7 @@ class CheckJSONServiceTest(Script):
                 customData = s.get_custom_fields()
                 self.log_info(f"custom data: {customData}")
                 customDataX = str(customData).split('{')
-                self.log_info(f"split: {customData[config]}")
+                self.log_info(f"split: {customDataX}")
                 
                 
                 # formatting
