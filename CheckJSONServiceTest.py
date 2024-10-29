@@ -48,8 +48,9 @@ class CheckJSONServiceTest(Script):
                 self.log_info(f"{vm} has the following service: {s}")
                 
                 # Check custom data, get config & validate against scheme
-                conf = s.get_custom_fields()
-                self.log_info(f"{conf}")
+                customData = s.get_custom_fields()
+                self.log_info(f"custom data: {customData} // of type {customData.type}")
+                
                 
                 # formatting
                 self.log_info(f"--------------------------")
