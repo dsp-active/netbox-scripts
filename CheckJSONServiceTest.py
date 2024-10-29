@@ -50,7 +50,8 @@ class CheckJSONServiceTest(Script):
                 # Check custom data, get config & validate against scheme
                 customData = s.get_custom_fields()
                 self.log_info(f"custom data: {customData}")
-                self.log_info(f"config: {customData[config]}")
+                customDataX = str(customData).split('{')
+                self.log_info(f"split: {customData[config]}")
                 
                 
                 # formatting
