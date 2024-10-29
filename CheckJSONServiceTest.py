@@ -34,6 +34,7 @@ class CheckJSONServiceTest(Script):
             
             for s in services:
                 self.log_success(f"{vm} has the following service: {s}")
+                s.get_custom_fields()
 
             # formatting
             self.log_info(f"--------------------------")
