@@ -5,7 +5,7 @@ from virtualization.choices import VirtualMachineStatusChoices
 from ipam.models import Service
 
 from jsonschema import validate
-import json
+# import json
 
 #--------------------
 
@@ -56,9 +56,9 @@ def run(self, data, commit):
             customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
             # self.log_info(f"cd as String: {customDataX}")
             customDataX = ("{" + (customDataX.split('{')[1]).split('}')[0] + "}").replace("'", '"')
-            # self.log_info(f"json conf: {customDataX}")
-            cfg = json.loads(customDataX)
-            self.log_info(f"conf: {cfg}")
+            self.log_info(f"json conf: {customDataX}")
+            # cfg = json.loads(customDataX)
+            # self.log_info(f"conf: {cfg}")
 
             # validate against scheme
             # jsonval = validate(instance=cfg, schema=schema)
