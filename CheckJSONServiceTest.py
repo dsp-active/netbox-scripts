@@ -5,7 +5,7 @@ from virtualization.choices import VirtualMachineStatusChoices
 from ipam.models import Service
 
 from jsonschema import validate
-# import json
+import json
 
 #--------------------
 
@@ -36,36 +36,36 @@ class CheckJSONServiceTest(Script):
         }
     )
 
-#--------------------
+    #--------------------
 
-def run(self, data, commit):
+    def run(self, data, commit):
 
-    for vm in data['vm_choice']:
-        # get all services that match the chosen vm
-        services = Service.objects.filter(virtual_machine=vm.id)
+        for vm in data['vm_choice']:
+            # get all services that match the chosen vm
+            services = Service.objects.filter(virtual_machine=vm.id)
 
-        for s in services:
-            # list services
-            self.log_info(f"{vm} has the following service: {s}")
+            for s in services:
+                # list services
+                self.log_info(f"{vm} has the following service: {s}")
 
-            # Check custom data, get config & validate against scheme
-            # .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>)
-            # .custom_fields -> QuerySet - zieht die Felder, aber hab keine Werte >_>
-            customData = s.get_custom_fields()
-            # self.log_info(f"custom data: {customData}")
-            customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
-            # self.log_info(f"cd as String: {customDataX}")
-            customDataX = ("{" + (customDataX.split('{')[1]).split('}')[0] + "}").replace("'", '"')
-            self.log_info(f"json conf: {customDataX}")
-            # cfg = json.loads(customDataX)
-            # self.log_info(f"conf: {cfg}")
+                # Check custom data, get config & validate against scheme
+                # .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>)
+                # .custom_fields -> QuerySet - zieht die Felder, aber hab keine Werte >_>
+                customData = s.get_custom_fields()
+                # self.log_info(f"custom data: {customData}")
+                customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
+                # self.log_info(f"cd as String: {customDataX}")
+                customDataX = ("{" + (customDataX.split('{')[1]).split('}')[0] + "}").replace("'", '"')
+                self.log_info(f"json conf: {customDataX}")
+                cfg = json.loads(customDataX)
+                self.log_info(f"conf: {cfg}")
 
-            # validate against scheme
-            # jsonval = validate(instance=cfg, schema=schema)
-            # if jsonval != "":
-            #     self.log_success(f"Config stimmt mit den Vorgaben überein.")
-            # else:
-            #     self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!")
+                # validate against scheme
+                jsonval = validate(instance=cfg, schema=schema)
+                if jsonval != "":
+                    self.log_success(f"Config stimmt mit den Vorgaben überein.")
+                else:
+                    self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!")
 
-            # formatting
-            self.log_info(f"--------------------------")
+                # formatting
+                self.log_info(f"--------------------------")
