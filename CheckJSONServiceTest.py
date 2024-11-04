@@ -5,6 +5,7 @@ from virtualization.choices import VirtualMachineStatusChoices
 from ipam.models import Service
 
 from jsonschema import validate
+import json
 
 #--------------------
 
@@ -53,9 +54,12 @@ class CheckJSONServiceTest(Script):
                 customData = s.get_custom_fields()
                 self.log_info(f"custom data: {customData}")
                 customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
-                self.log_info(f"cd as String: {customDataX}")
-                customDataX = (customDataX.split('{')[1] + customDataX.split('}')[1]).split(':')
-                self.log_info(f"json conf: {customDataX}")
+                # self.log_info(f"cd as String: {customDataX}")
+                customDataX = (customDataX.split('{')[1]).split('}')[0]
+                customDataX = customDataX.replace("'",'"')
+                # self.log_info(f"json conf: {customDataX}")
+                customData = json.loads(customDataX)
+                self.log_info(f"conf: {customData}")
 
                 # formatting
                 self.log_info(f"--------------------------")
