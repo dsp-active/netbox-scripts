@@ -38,16 +38,11 @@ class CheckJSONServiceTest(Script):
                 self.log_info(f"{vm} has the following service: {s}")
 
                 # Check custom data, get config & validate against scheme
-                # --- .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>)
-                # --- .custom_fields -> QuerySet - zieht die Felder, aber hab keine Werte >_>
                 customData = s.get_custom_fields()
-                # DEBUG: self.log_info(f"custom data: {customData}")
                 customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
-                # DEBUG: self.log_info(f"cd as String: {customDataX}")
                 customDataX = ("{" + (customDataX.split('{')[1]).split('}')[0] + "}").replace("'", '"')
                 self.log_info(f"json Config: {customDataX}")
                 cfg = json.loads(customDataX)
-                # DEBUG: self.log_info(f"conf: {cfg}")
 
                 # validate against scheme
                 try:
