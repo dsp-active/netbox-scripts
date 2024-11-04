@@ -55,8 +55,7 @@ class CheckJSONServiceTest(Script):
                 self.log_info(f"custom data: {customData}")
                 customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
                 # self.log_info(f"cd as String: {customDataX}")
-                customDataX = (customDataX.split('{')[1]).split('}')[0]
-                customDataX = customDataX.replace("'",'"')
+                customDataX = ("{" + (customDataX.split('{')[1]).split('}')[0] + "}").replace("'", '"')
                 # self.log_info(f"json conf: {customDataX}")
                 customData = json.loads(customDataX)
                 self.log_info(f"conf: {customData}")
