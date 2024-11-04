@@ -49,23 +49,23 @@ class CheckJSONServiceTest(Script):
                 self.log_info(f"{vm} has the following service: {s}")
 
                 # Check custom data, get config & validate against scheme
-                # .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>)
-                # .custom_fields -> QuerySet - zieht die Felder, aber hab keine Werte >_>
+                # --- .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>)
+                # --- .custom_fields -> QuerySet - zieht die Felder, aber hab keine Werte >_>
                 customData = s.get_custom_fields()
-                # self.log_info(f"custom data: {customData}")
+                # DEBUG: self.log_info(f"custom data: {customData}")
                 customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
-                # self.log_info(f"cd as String: {customDataX}")
+                # DEBUG: self.log_info(f"cd as String: {customDataX}")
                 customDataX = ("{" + (customDataX.split('{')[1]).split('}')[0] + "}").replace("'", '"')
-                self.log_info(f"json conf: {customDataX}")
+                self.log_info(f"json Config: {customDataX}")
                 cfg = json.loads(customDataX)
-                self.log_info(f"conf: {cfg}")
+                # DEBUG: self.log_info(f"conf: {cfg}")
 
                 # validate against scheme
                 try:
-                    jsonval = validate(instance=cfg, schema=schema)
+                    validate(instance=cfg, schema=schema)
                     self.log_success(f"Config stimmt mit den Vorgaben überein.")
                 except Exception as e:
-                    self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!")
+                    self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!\n{e}")
 
                 # formatting
                 self.log_info(f"--------------------------")
