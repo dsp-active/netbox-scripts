@@ -23,7 +23,7 @@ schema = {
 
 class CheckJSONServiceTest(Script):
     class Meta:
-        name = "Test the JSON Config of chosen services"
+        name = "Test the JSON Config of all VM's services"
         description = "Use the JSON Schema library to check the JSON config of every VM available."
         commit_default = False
 
