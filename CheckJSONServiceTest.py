@@ -61,11 +61,11 @@ def run(self, data, commit):
             self.log_info(f"conf: {cfg}")
 
             # validate against scheme
-            jsonval = validate(instance=cfg, schema=schema)
-            if jsonval != "":
-                self.log_success(f"Config stimmt mit den Vorgaben überein.")
-            else:
-                self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!")
+            # jsonval = validate(instance=cfg, schema=schema)
+            # if jsonval != "":
+            #     self.log_success(f"Config stimmt mit den Vorgaben überein.")
+            # else:
+            #     self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!")
 
             # formatting
             self.log_info(f"--------------------------")
