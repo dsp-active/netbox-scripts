@@ -48,12 +48,14 @@ class CheckJSONServiceTest(Script):
                 self.log_info(f"{vm} has the following service: {s}")
                 
                 # Check custom data, get config & validate against scheme
-                # .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>) - könnte man maybe filtern?
+                # .get_custom_fields() -> dict mit nicht ansprechbaren keys (<CustomField: JSON Config>)
                 # .custom_fields -> QuerySet - zieht die Felder, aber hab keine Werte >_>
                 customData = s.get_custom_fields()
                 self.log_info(f"custom data: {customData}")
-                customDataX = ", ".join("=".join((str(k),str(v))) for k,v in customData.items())
+                customDataX = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
                 self.log_info(f"cd as String: {customDataX}")
-                
+                customDataX = (customDataX.split('{')[1] + customDataX.split('}')[1]).split(':')
+                self.log_info(f"json conf: {customDataX}")
+
                 # formatting
                 self.log_info(f"--------------------------")
