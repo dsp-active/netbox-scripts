@@ -61,10 +61,10 @@ class CheckJSONServiceTest(Script):
                 self.log_info(f"conf: {cfg}")
 
                 # validate against scheme
-                jsonval = validate(instance=cfg, schema=schema)
-                if jsonval != "":
+                try:
+                    jsonval = validate(instance=cfg, schema=schema)
                     self.log_success(f"Config stimmt mit den Vorgaben überein.")
-                else:
+                except Exception as e:
                     self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!")
 
                 # formatting
