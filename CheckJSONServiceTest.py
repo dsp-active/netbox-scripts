@@ -65,7 +65,7 @@ class CheckJSONServiceTest(Script):
                     validate(instance=cfg, schema=schema)
                     self.log_success(f"Config stimmt mit den Vorgaben überein.")
                 except Exception as e:
-                    self.log_warning(f"Config ist fehlerhaft! Bitte prüfen!\n{e}")
+                    self.log_warning(f"Config ist fehlerhaft! Bitte prüfen! --- {e}")
 
                 # formatting
                 self.log_info(f"--------------------------")
