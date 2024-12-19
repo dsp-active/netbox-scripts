@@ -131,7 +131,7 @@ class ExportAllVMResourcesToCSV(Script):
         ws.title = sheetName
 
         # Save to file
-        savePath = f'~/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
+        savePath = f'/opt/netbox/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
         wb.save(savePath)
         self.log_info(f"File exported successfully.")
 
