@@ -5,8 +5,8 @@ from virtualization.choices import VirtualMachineStatusChoices
 from tenancy.models import Tenant
 
 from openpyxl import Workbook
-import openpyxl.styles
-from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Font
+from openpyxl.worksheet.table import Table, TableStyleInfo
 
 import datetime
 import os
@@ -109,34 +109,25 @@ class ExportAllVMResourcesToCSV(Script):
             for cell in column:
                 if len(str(cell.value)) > max_length:
                     max_length = len(cell.value)
-            adjusted_width = (max_length + 2) * 1.2
+            adjusted_width = (max_length + 2) * 1.3
             ws.column_dimensions[column_letter].width = adjusted_width
 
-        # Fill every other row & center all cells
-        row_count = ws.max_row
-        column_count = ws.max_column
-        fl = PatternFill(fill_type="solid", fgColor="eeeded")
-        for y in range(1, column_count + 1):
-            for x in range(1, row_count + 1):
-                c = ws.cell(row=x, column=y)
-                c.alignment = openpyxl.styles.alignment.Alignment(horizontal='center', vertical='center')
-                # add more styles if needed
-                if x % 2 != 0:
-                    c.fill = fl
-
-        # Head row style & freeze + sheet name
+        # Head row style & sheet name
         ft = Font(name='Calibri', size=12, bold=True)
-        flx = PatternFill(fill_type="solid", fgColor="e1edf5")
-        cellSpan = "A1:E1"
-        sheetName = f"Tenant Resources {datetime.datetime.now().strftime("%d.%m.%Y")}"
-        for row in ws[cellSpan]:
+        headRowx = "A1:E1"
+        for row in ws[headRowx]:
             for cell in row:
                 cell.font = ft
-                cell.fill = flx
-        ws.print_title_rows = '1:1'
-        ws.views.sheetView[0].topLeftCell = 'A1'
-        ws.freeze_panes = "E1"
+        sheetName = f"Tenant Resources {datetime.datetime.now().strftime("%d.%m.%Y")}"
         ws.title = sheetName
+
+        # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
+        tab = Table(displayName="Tenants", ref=f"A1:E{len(tenants)}")
+        # Add a default style with striped rows and banded columns
+        style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                               showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+        tab.tableStyleInfo = style
+        ws.add_table(tab)
 
         # Save to file
         #savePath = f'/opt/netbox/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
