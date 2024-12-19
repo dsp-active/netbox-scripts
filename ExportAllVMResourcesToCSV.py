@@ -133,7 +133,7 @@ class ExportAllVMResourcesToCSV(Script):
             for cell in row:
                 cell.font = ft
                 cell.fill = flx
-        ws.print_title_rows = cellSpan
+        ws.print_title_rows = '1:1'
         ws.views.sheetView[0].topLeftCell = 'A1'
         ws.freeze_panes = "E1"
         ws.title = sheetName
