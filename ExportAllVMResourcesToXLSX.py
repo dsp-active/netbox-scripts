@@ -67,7 +67,7 @@ class TenantCalc:
     def set_storage(self, storage):
         self.storage = storage
 
-class ExportAllVMResourcesToCSV(Script):
+class ExportAllVMResourcesToXLSX(Script):
     class Meta:
         name = "Export All Tenant Resources to .csv"
         description = "Check assigned hardware resources of all active VMs and export them to a .csv file sorted by tenant."
