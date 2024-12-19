@@ -82,6 +82,7 @@ class ExportAllVMResourcesToCSV(Script):
         for tenant in Tenant.objects.all():
             tenants.append(TenantCalc(tenant.id, tenant.name, 0, 0, 0))
         #tenants = tenants.reverse() # reverse order
+        tenants = list(reversed(tenants))
         self.log_info(f"Tenants collected.")
 
         # iterate through active VMs and add resources to tenants
