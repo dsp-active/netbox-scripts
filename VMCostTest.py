@@ -7,8 +7,8 @@ from virtualization.choices import VirtualMachineStatusChoices
 
 class VMCostTest(Script):
     class Meta:
-        name = "Test Calculation of VM ressource costs"
-        description = "Calculate a given VMs monthly cost based on its assigned hardware ressources."
+        name = "Test Calculation of VM resource costs"
+        description = "Calculate a given VMs monthly cost based on its assigned hardware resources."
         commit_default = False
         
     vm_choice = MultiObjectVar(
