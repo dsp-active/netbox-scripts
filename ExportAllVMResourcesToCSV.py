@@ -13,7 +13,7 @@ import os
 
 # --------------------
 
-filename = "NetboxOut_" + str(datetime.datetime.now().strftime("%Y.%m")) + '.xlsx'
+filename = "NetboxOut_" + str(datetime.datetime.now().strftime("%Y-%m")) + '.xlsx'
 savePath = os.path.join('/opt/netbox/',filename)
 
 # VM attributes
@@ -137,6 +137,7 @@ class ExportAllVMResourcesToCSV(Script):
         # Save to file
         #savePath = f'/opt/netbox/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
         self.log_info(f"Saving file: {savePath}")
+        wb.close()
         wb.save(savePath)
         self.log_success(f"File exported successfully.")
 
