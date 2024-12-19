@@ -14,7 +14,7 @@ import os
 # --------------------
 
 filename = "NetboxOut_" + str(datetime.datetime.now().strftime("%Y-%m")) + '.xlsx'
-savePath = os.path.join('/opt/netbox/',filename)
+savePath = os.path.join('/opt/netbox/netbox/media',filename)
 
 # VM attributes
 # Choices are: _name, bookmarks, cluster, cluster_id, comments, config_template, config_template_id, contacts, created, \
