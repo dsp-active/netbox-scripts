@@ -124,8 +124,8 @@ class ExportAllVMResourcesToCSV(Script):
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
         tab = Table(displayName="Tenants", ref=f"A1:E{len(tenants)+1}")
         # Add a default style with striped rows and banded columns
-        style = TableStyleInfo(name="TableStyleMedium1", showFirstColumn=False,
-                               showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+        style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                               showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
         ws.add_table(tab)
 
