@@ -124,7 +124,7 @@ class ExportAllVMResourcesToCSV(Script):
                 if x % 2 != 0:
                     c.fill = fl
 
-        # Head row style + sheet name
+        # Head row style & freeze + sheet name
         ft = Font(name='Calibri', size=12, bold=True)
         flx = PatternFill(fill_type="solid", fgColor="e1edf5")
         cellSpan = "A1:E1"
@@ -133,6 +133,9 @@ class ExportAllVMResourcesToCSV(Script):
             for cell in row:
                 cell.font = ft
                 cell.fill = flx
+        ws.print_title_rows = cellSpan
+        ws.views.sheetView[0].topLeftCell = 'A1'
+        ws.freeze_panes = "E1"
         ws.title = sheetName
 
         # Save to file
