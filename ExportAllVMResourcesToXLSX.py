@@ -69,8 +69,8 @@ class TenantCalc:
 
 class ExportAllVMResourcesToXLSX(Script):
     class Meta:
-        name = "Export All Tenant Resources to .csv"
-        description = "Check assigned hardware resources of all active VMs and export them to a .csv file sorted by tenant."
+        name = "Export All Tenant Resources to .xlsx"
+        description = "Check assigned hardware resources of all active VMs and export them to an Excel file sorted by tenant."
         commit_default = False
 
     # --------------------
