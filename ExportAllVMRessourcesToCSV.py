@@ -1,5 +1,3 @@
-from operator import attrgetter
-
 from extras.scripts import *
 
 from virtualization.models import VirtualMachine
@@ -15,11 +13,11 @@ import datetime
 # --------------------
 
 # VM attributes
-"""Choices are: _name, bookmarks, cluster, cluster_id, comments, config_template, config_template_id, contacts, created, \
- custom_field_data, description, device, device_id, disk, id, images, interface_count, interfaces, journal_entries, \
- last_updated, local_context_data, memory, name, platform, platform_id, primary_ip4, primary_ip4_id, primary_ip6, \
- primary_ip6_id, role, role_id, serial, services, site, site_id, status, subscriptions, tagged_items, tags, tenant, \
- tenant_id, vcpus, virtual_disk_count, virtualdisks"""
+# Choices are: _name, bookmarks, cluster, cluster_id, comments, config_template, config_template_id, contacts, created, \
+#  custom_field_data, description, device, device_id, disk, id, images, interface_count, interfaces, journal_entries, \
+#  last_updated, local_context_data, memory, name, platform, platform_id, primary_ip4, primary_ip4_id, primary_ip6, \
+#  primary_ip6_id, role, role_id, serial, services, site, site_id, status, subscriptions, tagged_items, tags, tenant, \
+#  tenant_id, vcpus, virtual_disk_count, virtualdisks
 
 # --------------------
 
@@ -138,11 +136,11 @@ class VMCostTest(Script):
 
         # Export to SFTP ?
         # https://stackoverflow.com/questions/33751854/upload-file-via-sftp-with-python#73432631
-        r"""import paramiko
-         
-        with paramiko.SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            ssh.connect(host, username=username, password=password)
-            sftp = ssh.open_sftp()
-            sftp.chdir('public')
-            sftp.put('C:\Users\XXX\Dropbox\test.txt', 'test.txt')"""
+        # import paramiko
+        #
+        # with paramiko.SSHClient() as ssh:
+        #     ssh.load_system_host_keys()
+        #     ssh.connect(host, username=username, password=password)
+        #     sftp = ssh.open_sftp()
+        #     sftp.chdir('public')
+        #     sftp.put('C:\Users\XXX\Dropbox\test.txt', 'test.txt')
