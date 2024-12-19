@@ -9,8 +9,12 @@ import openpyxl.styles
 from openpyxl.styles import Font, PatternFill
 
 import datetime
+import os
 
 # --------------------
+
+filename = "NetboxOut_" + str(datetime.datetime.now().strftime("%Y.%m")) + '.xlsx'
+savePath = os.path.join('/opt/netbox/',filename)
 
 # VM attributes
 # Choices are: _name, bookmarks, cluster, cluster_id, comments, config_template, config_template_id, contacts, created, \
@@ -131,9 +135,10 @@ class ExportAllVMResourcesToCSV(Script):
         ws.title = sheetName
 
         # Save to file
-        savePath = f'/opt/netbox/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
+        #savePath = f'/opt/netbox/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
+        self.log_info(f"Saving file: {savePath}")
         wb.save(savePath)
-        self.log_info(f"File exported successfully.")
+        self.log_success(f"File exported successfully.")
 
         # Export to SFTP ?
         # https://stackoverflow.com/questions/33751854/upload-file-via-sftp-with-python#73432631
