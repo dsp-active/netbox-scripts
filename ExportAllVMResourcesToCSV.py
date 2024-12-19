@@ -94,7 +94,8 @@ class ExportAllVMResourcesToCSV(Script):
         ws = wb.active
         headRow = ["Tenant", "ID", "vCores", "RAM", "Storage"]
         ws.append(headRow)
-        ws.append(tenants)
+        for tenant in tenants:
+            ws.append([tenant.get_name(),tenant.get_id(),tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
 
         # Change Width of Columns
         for column in ws.columns:
