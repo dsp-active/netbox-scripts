@@ -16,7 +16,7 @@ import os
 filename = "NetboxOut_" + str(datetime.datetime.now().strftime("%Y-%m")) + '.xlsx'
 savePath = os.path.join('/opt/netbox/netbox/media',filename)
 
-# VM attributes
+# ___VM attributes___
 # Choices are: _name, bookmarks, cluster, cluster_id, comments, config_template, config_template_id, contacts, created, \
 #  custom_field_data, description, device, device_id, disk, id, images, interface_count, interfaces, journal_entries, \
 #  last_updated, local_context_data, memory, name, platform, platform_id, primary_ip4, primary_ip4_id, primary_ip6, \
@@ -81,7 +81,7 @@ class ExportAllVMResourcesToCSV(Script):
         tenants = []
         for tenant in Tenant.objects.all():
             tenants.append(TenantCalc(tenant.id, tenant.name, 0, 0, 0))
-        #tenants = dict(reversed(list(tenants.items()))) # reverse order if necessary ^^
+        tenants = tenants.sort(reverse=True) # reverse order
         self.log_info(f"Tenants collected.")
 
         # iterate through active VMs and add resources to tenants
@@ -93,15 +93,15 @@ class ExportAllVMResourcesToCSV(Script):
                     tenant.set_storage(tenant.get_storage()+(vm.disk/1000))
         self.log_info(f"VMs & resources collected.")
 
-        # Setup Workbook for Excel output
+        # Setup Workbook for Excel output, add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "ID", "vCores", "RAM", "Storage"]
+        headRow = ["Tenant", "ID", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
         ws.append(headRow)
         for tenant in tenants:
             ws.append([tenant.get_name(),tenant.get_id(),tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
 
-        # Change Width of Columns
+        # Change column widths
         for column in ws.columns:
             max_length = 0
             column_letter = column[0].column_letter
@@ -123,7 +123,7 @@ class ExportAllVMResourcesToCSV(Script):
                 if x % 2 != 0:
                     c.fill = fl
 
-        # Head Row Style + Sheet Name
+        # Head row style + sheet name
         ft = Font(name='Calibri', size=12, bold=True)
         flx = PatternFill(fill_type="solid", fgColor="e1edf5")
         cellSpan = "A1:E1"
