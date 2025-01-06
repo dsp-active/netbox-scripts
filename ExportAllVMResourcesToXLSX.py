@@ -129,7 +129,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:{ws.max_column}1") # {len(tenants)+1}
+        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
