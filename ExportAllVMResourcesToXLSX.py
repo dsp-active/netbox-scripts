@@ -103,12 +103,12 @@ class ExportAllVMResourcesToXLSX(Script):
             ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
         emptyRow = ["", "", "", "", "", ""]
         ws.append(emptyRow)
-        bottomRow = ["Teilsummen:", "", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])", f"=SUBTOTAL(9,Tenants[Storage (per GB)]"]
+        bottomRow = ["Teilsummen:", "", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])",
+                     f"=SUBTOTAL(9,Tenants[Storage (per GB)])"]
         ws.append(bottomRow)
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
-                #cell.fill(fill_type="solid", bgColor=colors.Color(rgb='C5CBE8'))
                 cell.font = Font(bold=True)
                 if str(cell.value).startswith('='):
                     cell.data_type = 'f'
