@@ -108,7 +108,7 @@ class ExportAllVMResourcesToXLSX(Script):
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
-                cell.fill(fill_type="solid", bgColor=colors.Color(rgb='C5CBE8'))
+                #cell.fill(fill_type="solid", bgColor=colors.Color(rgb='C5CBE8'))
                 cell.font = Font(bold=True)
                 if str(cell.value).startswith('='):
                     cell.data_type = 'f'
