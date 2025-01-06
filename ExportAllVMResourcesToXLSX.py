@@ -97,10 +97,10 @@ class ExportAllVMResourcesToXLSX(Script):
         # Setup Workbook for Excel output, add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "ID", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
+        headRow = ["Tenant", "ID", "Application", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
         ws.append(headRow)
         for tenant in tenants:
-            ws.append([tenant.get_name(),tenant.get_id(),tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
+            ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
 
         # Change column widths
         for column in ws.columns:
@@ -109,12 +109,12 @@ class ExportAllVMResourcesToXLSX(Script):
             for cell in column:
                 if len(str(cell.value)) > max_length:
                     max_length = len(cell.value)
-            adjusted_width = (max_length + 2) * 1.3
+            adjusted_width = (max_length + 2) * 1.2
             ws.column_dimensions[column_letter].width = adjusted_width
 
         # Head row style & sheet name
         ft = Font(name='Calibri', size=12, bold=True)
-        headRowx = "A1:E1"
+        headRowx = "A1:F1"
         for row in ws[headRowx]:
             for cell in row:
                 cell.font = ft
@@ -122,14 +122,18 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:E{len(tenants)+1}")
+        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
         ws.add_table(tab)
 
+        # add last line with partial sums
+        bottomRow = ["Gesamtsumme:","","","=TEILERGEBNIS(9;[vCores (per core)])","=TEILERGEBNIS(9;[RAM (per GB)])",
+                     "=TEILERGEBNIS(9;[Storage (per GB)]"]
+        ws.append(bottomRow)
+
         # Save to file
-        #savePath = f'/opt/netbox/NetboxOut_{datetime.datetime.now().strftime("%Y.%m")}.xlsx'
         self.log_info(f"Saving file: {savePath}")
         wb.close()
         wb.save(savePath)
