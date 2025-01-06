@@ -101,14 +101,13 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.append(headRow)
         for tenant in tenants:
             ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
-        bottomRow = ["Gesamtsumme:", "", "", "=SUBTOTAL(9;D2:D9)", f"=SUBTOTAL(9;E2:E9)", f"=SUBTOTAL(9;F2:F9"]
+        bottomRow = ["Teilsummen:", "", "", "=SUBTOTAL(9,D2:D9)", f"=SUBTOTAL(9,E2:E9)", f"=SUBTOTAL(9,F2:F9"]
         ws.append(bottomRow)
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
         for row in ws["A10:F10"]: # ws[lastRow]
             for cell in row:
-                cell.data_type = 'f'
                 if str(cell.value).startswith('='):
-                    pass
+                    cell.data_type = 'f'
 
         # Change column widths
         for column in ws.columns:
