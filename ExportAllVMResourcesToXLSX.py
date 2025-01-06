@@ -83,7 +83,7 @@ class ExportAllVMResourcesToXLSX(Script):
             tenants.append(TenantCalc(tenant.id, tenant.name, 0, 0, 0))
         #tenants = tenants.reverse() # reverse order -> NOPE, breaks typing ^^
         tenants = list(reversed(tenants))
-        self.log_info(f"Tenants collected.")
+        self.log_info(f"Tenants collected.\n{tenants}")
 
         # iterate through active VMs and add resources to tenants
         for vm in VirtualMachine.objects.filter(status=VirtualMachineStatusChoices.STATUS_ACTIVE):
