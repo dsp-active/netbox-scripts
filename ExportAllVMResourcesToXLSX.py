@@ -106,8 +106,9 @@ class ExportAllVMResourcesToXLSX(Script):
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
         for row in ws["A10:F10"]: # ws[lastRow]
             for cell in row:
+                cell.data_type = 'f'
                 if str(cell.value).startswith('='):
-                    cell.data_type = 'f'
+                    pass
 
         # Change column widths
         for column in ws.columns:
