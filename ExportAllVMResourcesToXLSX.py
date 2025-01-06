@@ -103,7 +103,7 @@ class ExportAllVMResourcesToXLSX(Script):
             ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
         emptyRow = ["", "", "", "", "", ""]
         ws.append(emptyRow)
-        bottomRow = ["Teilsummen:", "", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,E2:E9)", f"=SUBTOTAL(9,F2:F9"]
+        bottomRow = ["Teilsummen:", "", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])", f"=SUBTOTAL(9,Tenants[Storage (per GB)]"]
         ws.append(bottomRow)
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
         for row in ws[lastRow]:
@@ -118,7 +118,7 @@ class ExportAllVMResourcesToXLSX(Script):
             max_length = 0
             column_letter = column[0].column_letter
             for cell in column:
-                if len(str(cell.value)) > max_length:
+                if len(str(cell.value)) > max_length and not str(cell.value).startswith('='):
                     max_length = len(cell.value)
             adjusted_width = (max_length + 2) * 1.2
             ws.column_dimensions[column_letter].width = adjusted_width
@@ -133,7 +133,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+2}")
+        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
