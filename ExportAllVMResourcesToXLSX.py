@@ -5,7 +5,7 @@ from virtualization.choices import VirtualMachineStatusChoices
 from tenancy.models import Tenant
 
 from openpyxl import Workbook
-from openpyxl.styles import Font
+from openpyxl.styles import Font, colors
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 import datetime
@@ -101,11 +101,13 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.append(headRow)
         for tenant in tenants:
             ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
-        bottomRow = ["Teilsummen:", "", "", "=SUBTOTAL(9,D2:D9)", f"=SUBTOTAL(9,E2:E9)", f"=SUBTOTAL(9,F2:F9"]
-        ws.append(bottomRow)
+        bottomRows = [["","","","","",""],["Teilsummen:", "", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,E2:E9)", f"=SUBTOTAL(9,F2:F9"]]
+        ws.append(bottomRows)
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
-        for row in ws["A10:F10"]: # ws[lastRow]
+        for row in ws[lastRow]:
             for cell in row:
+                cell.PatternFill(fill_type="solid", bgColor=colors.Color(rgb='C5CBE8'))
+                cell.font = Font(bold=True)
                 if str(cell.value).startswith('='):
                     cell.data_type = 'f'
 
