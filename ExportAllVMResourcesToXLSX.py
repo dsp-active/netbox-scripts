@@ -101,8 +101,8 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.append(headRow)
         for tenant in tenants:
             ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
-        bottomRow = ["Gesamtsumme:", "", "", f"=TEILERGEBNIS(9;[vCores (per core)])", f"=TEILERGEBNIS(9;[RAM (per GB)])",
-                     f"=TEILERGEBNIS(9;[Storage (per GB)]"]
+        bottomRow = ["Gesamtsumme:", "", "", r"TEILERGEBNIS(9;[vCores (per core)])", r"TEILERGEBNIS(9;[RAM (per GB)])",
+                     r"TEILERGEBNIS(9;[Storage (per GB)]"]
         ws.append(bottomRow)
 
         # Change column widths
