@@ -104,7 +104,7 @@ class ExportAllVMResourcesToXLSX(Script):
         bottomRow = ["Gesamtsumme:", "", "", "=SUBTOTAL(9;D2:D9)", f"=SUBTOTAL(9;E2:E9)", f"=SUBTOTAL(9;F2:F9"]
         ws.append(bottomRow)
         lastRow = f"A{ws.max_row}:F{ws.max_row}"
-        for row in ws[lastRow]:
+        for row in ws["A10:F10"]: # ws[lastRow]
             for cell in row:
                 if str(cell.value).startswith('='):
                     cell.data_type = 'f'
@@ -129,7 +129,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+1}")
+        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+2}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
