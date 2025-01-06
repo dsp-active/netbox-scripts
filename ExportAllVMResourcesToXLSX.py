@@ -101,6 +101,9 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.append(headRow)
         for tenant in tenants:
             ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
+        bottomRow = ["Gesamtsumme:", "", "", f"=TEILERGEBNIS(9;[vCores (per core)])", f"=TEILERGEBNIS(9;[RAM (per GB)])",
+                     f"=TEILERGEBNIS(9;[Storage (per GB)]"]
+        ws.append(bottomRow)
 
         # Change column widths
         for column in ws.columns:
@@ -127,11 +130,6 @@ class ExportAllVMResourcesToXLSX(Script):
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
         ws.add_table(tab)
-
-        # add last line with partial sums
-        bottomRow = ["Gesamtsumme:","","","=TEILERGEBNIS(9;[vCores (per core)])","=TEILERGEBNIS(9;[RAM (per GB)])",
-                     "=TEILERGEBNIS(9;[Storage (per GB)]"]
-        ws.append(bottomRow)
 
         # Save to file
         self.log_info(f"Saving file: {savePath}")
