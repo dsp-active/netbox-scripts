@@ -100,8 +100,8 @@ class ExportAllVMResourcesToXLSX(Script):
         # last row + styling & mark functions as such to prevent errors
         emptyRow = ["", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["Gesamt:", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])",
-                     f"=SUBTOTAL(9,Tenants[Storage (per GB)])"]
+        bottomRow = ["Gesamt:", "", f"=SUBTOTAL(9,Resources[vCores (per core)])", f"=SUBTOTAL(9,Resources[RAM (per GB)])",
+                     f"=SUBTOTAL(9,Resources[Storage (per GB)])"]
         ws.append(bottomRow)
         lastRow = f"A{ws.max_row}:E{ws.max_row}"
         for row in ws[lastRow]:
@@ -130,7 +130,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:E{len(applications)+1}")
+        tab = Table(displayName="Resources", ref=f"A1:E{len(applications)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
