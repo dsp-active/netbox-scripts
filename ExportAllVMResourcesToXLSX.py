@@ -26,9 +26,10 @@ savePath = os.path.join('/opt/netbox/netbox/media',filename)
 # --------------------
 
 class Application:
-     def __init__(self, tenant, name, cores, ram, storage):
+     def __init__(self, tenant, name, vm, cores, ram, storage):
          self.tenant = tenant
          self.name = name
+         self.vm = vm
          self.cores = cores
          self.ram = ram
          self.storage = storage
@@ -38,6 +39,8 @@ class Application:
          self.tenant = tenant
      def get_name(self):
          return self.name
+     def get_vm(self):
+         return self.vm
      def get_cores(self):
          return self.cores
      def set_cores(self, cores):
@@ -86,24 +89,24 @@ class ExportAllVMResourcesToXLSX(Script):
             app = app.split('Application=')[1].split(',')[0]
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
-                    applications.append(Application(tenant.get_name(), app, vm.vcpus, round(vm.memory/1024), round(vm.disk/1000)))
+                    applications.append(Application(tenant.get_name(), app, vm.name, vm.vcpus, round(vm.memory/1024), round(vm.disk/1000)))
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "Application", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
+        headRow = ["Tenant", "Application", "VM-Name", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
         ws.append(headRow)
         for app in applications:
-            ws.append([app.get_tenant(),app.get_name(),app.get_cores(),app.get_ram(),app.get_storage()])
+            ws.append([app.get_tenant(),app.get_name(),app.get_vm(),app.get_cores(),app.get_ram(),app.get_storage()])
 
         # last row + styling & mark functions as such to prevent errors
-        emptyRow = ["", "", "", "", ""] # dumb but it looks better (:
+        emptyRow = ["", "", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["Gesamt:", "", f"=SUBTOTAL(9,Resources[vCores (per core)])", f"=SUBTOTAL(9,Resources[RAM (per GB)])",
+        bottomRow = ["Gesamt:", "", "", f"=SUBTOTAL(9,Resources[vCores (per core)])", f"=SUBTOTAL(9,Resources[RAM (per GB)])",
                      f"=SUBTOTAL(9,Resources[Storage (per GB)])"]
         ws.append(bottomRow)
-        lastRow = f"A{ws.max_row}:E{ws.max_row}"
+        lastRow = f"A{ws.max_row}:F{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
                 cell.font = Font(bold=True)
@@ -122,7 +125,7 @@ class ExportAllVMResourcesToXLSX(Script):
 
         # head row style & sheet name
         ft = Font(name='Calibri', size=12, bold=True, color='ffece9e4') # color = argb hex value
-        headRowx = "A1:E1"
+        headRowx = "A1:F1"
         for row in ws[headRowx]:
             for cell in row:
                 cell.font = ft
@@ -130,7 +133,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Resources", ref=f"A1:E{len(applications)+1}")
+        tab = Table(displayName="Resources", ref=f"A1:F{len(applications)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
