@@ -52,29 +52,13 @@ class Application:
          self.storage = storage
 
 class TenantCalc:
-    def __init__(self, id, name, cores, ram, storage): # application:list,
+    def __init__(self, id, name):
         self.id = id
         self.name = name
-        #self.application = application
-        self.cores = cores
-        self.ram = ram
-        self.storage = storage
     def get_id(self):
         return self.id
     def get_name(self):
         return self.name
-    def get_cores(self):
-        return self.cores
-    def set_cores(self, cores):
-        self.cores = cores
-    def get_ram(self):
-        return self.ram
-    def set_ram(self, ram):
-        self.ram = ram
-    def get_storage(self):
-        return self.storage
-    def set_storage(self, storage):
-        self.storage = storage
 
 class ExportAllVMResourcesToXLSX(Script):
     class Meta:
@@ -86,12 +70,12 @@ class ExportAllVMResourcesToXLSX(Script):
 
     def run(self, data, commit):
 
-        # tenants to list - id, name, [application, -> to do] cores, ram, storage
+        # tenants to list - id, name
         tenants = []
         for tenant in Tenant.objects.all():
-            tenants.append(TenantCalc(tenant.id, tenant.name, 0, 0, 0))
+            tenants.append(TenantCalc(tenant.id, tenant.name))
         #tenants = tenants.reverse() # reverse order -> NOPE, breaks typing ^^
-        tenants = list(reversed(tenants)) # Could be cut now
+        tenants = list(reversed(tenants))
         self.log_info(f"Tenants collected.")
 
         # iterate through active VMs and add resources to tenants & applications
@@ -104,9 +88,6 @@ class ExportAllVMResourcesToXLSX(Script):
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
                     applications.append(Application(tenant.get_name(), app, vm.vcpus, round(vm.memory/1024), round(vm.disk/1000)))
-                    #tenant.set_cores(tenant.get_cores()+vm.vcpus)
-                    #tenant.set_ram(round(tenant.get_ram()+(vm.memory/1024)))
-                    #tenant.set_storage(round(tenant.get_storage()+(vm.disk/1000)))
         self.log_info(f"VMs & resources collected.")
 
         # setup Workbook for Excel output & add data
@@ -151,7 +132,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:E{len(tenants)+1}")
+        tab = Table(displayName="Tenants", ref=f"A1:E{len(applications)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
