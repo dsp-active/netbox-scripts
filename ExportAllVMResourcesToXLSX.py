@@ -70,7 +70,7 @@ class ExportAllVMResourcesToXLSX(Script):
 
     def run(self, data, commit):
 
-        # tenants to list - id, name
+        # tenants to list
         tenants = []
         for tenant in Tenant.objects.all():
             tenants.append(TenantCalc(tenant.id, tenant.name))
@@ -87,7 +87,7 @@ class ExportAllVMResourcesToXLSX(Script):
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
                     applications.append(Application(tenant.get_name(), app, vm.vcpus, round(vm.memory/1024), round(vm.disk/1000)))
-        self.log_info(f"VMs & resources collected.")
+        self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
         wb = Workbook()
