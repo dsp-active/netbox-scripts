@@ -78,10 +78,9 @@ class ExportAllVMResourcesToXLSX(Script):
         tenants = list(reversed(tenants))
         self.log_info(f"Tenants collected.")
 
-        # iterate through active VMs and add resources to tenants & applications
+        # iterate through active VMs and add resources to tenant + application pairs
         applications = []
         for vm in VirtualMachine.objects.filter(status=VirtualMachineStatusChoices.STATUS_ACTIVE):
-            # get application, add to list if needed
             customData = vm.get_custom_fields()
             app = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
             app = app.split('Application=')[1].split(',')[0]
@@ -95,16 +94,15 @@ class ExportAllVMResourcesToXLSX(Script):
         ws = wb.active
         headRow = ["Tenant", "Application", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
         ws.append(headRow)
-        #for tenant in tenants:
-        #    ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
         for app in applications:
             ws.append([app.get_tenant(),app.get_name(),app.get_cores(),app.get_ram(),app.get_storage()])
-        emptyRow = ["", "", "", "", ""] # dumb but it works (:
+
+        # last row + styling & mark functions as such to prevent errors
+        emptyRow = ["", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["Teilsummen:", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])",
+        bottomRow = ["Gesamt:", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])",
                      f"=SUBTOTAL(9,Tenants[Storage (per GB)])"]
         ws.append(bottomRow)
-        # last row styling & mark functions as such to prevent errors
         lastRow = f"A{ws.max_row}:E{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
