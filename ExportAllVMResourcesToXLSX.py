@@ -121,7 +121,7 @@ class ExportAllVMResourcesToXLSX(Script):
             ws.column_dimensions[column_letter].width = adjusted_width
 
         # head row style & sheet name
-        ft = Font(name='Calibri', size=12, bold=True, color="#ffece9e4") # color = argb hex value
+        ft = Font(name='Calibri', size=12, bold=True, color='ffece9e4') # color = argb hex value
         headRowx = "A1:E1"
         for row in ws[headRowx]:
             for cell in row:
