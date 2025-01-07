@@ -25,28 +25,37 @@ savePath = os.path.join('/opt/netbox/netbox/media',filename)
 
 # --------------------
 
-class VM:
-    def __init__(self, name, tenant, cores, ram, storage):
-        self.name = name
-        self.tenant = tenant
-        self.cores = cores
-        self.ram = ram
-        self.storage = storage
-    def get_name(self):
-        return self.name
-    def get_tenant(self):
-        return self.tenant
-    def get_cores(self):
-        return self.cores
-    def get_ram(self):
-        return self.ram
-    def get_storage(self):
-        return self.storage
+class Application:
+     def __init__(self, tenant, name, cores, ram, storage):
+         self.tenant = tenant
+         self.name = name
+         self.cores = cores
+         self.ram = ram
+         self.storage = storage
+     def get_tenant(self):
+         return self.tenant
+     def set_tenant(self,tenant):
+         self.tenant = tenant
+     def get_name(self):
+         return self.name
+     def get_cores(self):
+         return self.cores
+     def set_cores(self, cores):
+         self.cores = cores
+     def get_ram(self):
+         return self.ram
+     def set_ram(self, ram):
+         self.ram = ram
+     def get_storage(self):
+         return self.storage
+     def set_storage(self,storage):
+         self.storage = storage
 
 class TenantCalc:
-    def __init__(self, id, name, cores, ram, storage):
+    def __init__(self, id, name, cores, ram, storage): # application:list,
         self.id = id
         self.name = name
+        #self.application = application
         self.cores = cores
         self.ram = ram
         self.storage = storage
@@ -77,43 +86,52 @@ class ExportAllVMResourcesToXLSX(Script):
 
     def run(self, data, commit):
 
-        # tenants to list - id, name, cores, ram, storage
+        # tenants to list - id, name, [application, -> to do] cores, ram, storage
         tenants = []
         for tenant in Tenant.objects.all():
             tenants.append(TenantCalc(tenant.id, tenant.name, 0, 0, 0))
         #tenants = tenants.reverse() # reverse order -> NOPE, breaks typing ^^
-        tenants = list(reversed(tenants))
+        tenants = list(reversed(tenants)) # Could be cut now
         self.log_info(f"Tenants collected.")
 
-        # iterate through active VMs and add resources to tenants
+        # iterate through active VMs and add resources to tenants & applications
+        applications = []
         for vm in VirtualMachine.objects.filter(status=VirtualMachineStatusChoices.STATUS_ACTIVE):
+            # get application, add to list if needed
+            customData = vm.get_custom_fields()
+            app = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
+            app = app.split('Application=')[1].split(',')[0]
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
-                    tenant.set_cores(tenant.get_cores()+vm.vcpus)
-                    tenant.set_ram(round(tenant.get_ram()+(vm.memory/1024)))
-                    tenant.set_storage(round(tenant.get_storage()+(vm.disk/1000)))
+                    applications.append(Application(tenant.get_name(), app, vm.vcpus, round(vm.memory/1024), round(vm.disk/1000)))
+                    #tenant.set_cores(tenant.get_cores()+vm.vcpus)
+                    #tenant.set_ram(round(tenant.get_ram()+(vm.memory/1024)))
+                    #tenant.set_storage(round(tenant.get_storage()+(vm.disk/1000)))
         self.log_info(f"VMs & resources collected.")
 
-        # Setup Workbook for Excel output, add data
+        # setup Workbook for Excel output & add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "ID", "Application", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
+        headRow = ["Tenant", "Application", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
         ws.append(headRow)
-        for tenant in tenants:
-            ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
-        emptyRow = ["", "", "", "", "", ""]
+        #for tenant in tenants:
+        #    ws.append([tenant.get_name(),tenant.get_id(),"",tenant.get_cores(),tenant.get_ram(),tenant.get_storage()])
+        for app in applications:
+            ws.append([app.get_tenant(),app.get_name(),app.get_cores(),app.get_ram(),app.get_storage()])
+        emptyRow = ["", "", "", "", ""] # dumb but it works (:
         ws.append(emptyRow)
-        bottomRow = ["Teilsummen:", "", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])",
+        bottomRow = ["Teilsummen:", "", f"=SUBTOTAL(9,Tenants[vCores (per core)])", f"=SUBTOTAL(9,Tenants[RAM (per GB)])",
                      f"=SUBTOTAL(9,Tenants[Storage (per GB)])"]
         ws.append(bottomRow)
-        lastRow = f"A{ws.max_row}:F{ws.max_row}"
+        # last row styling & mark functions as such to prevent errors
+        lastRow = f"A{ws.max_row}:E{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
                 cell.font = Font(bold=True)
                 if str(cell.value).startswith('='):
                     cell.data_type = 'f'
 
-        # Change column widths
+        # change column widths
         for column in ws.columns:
             max_length = 0
             column_letter = column[0].column_letter
@@ -123,9 +141,9 @@ class ExportAllVMResourcesToXLSX(Script):
             adjusted_width = (max_length + 2) * 1.2
             ws.column_dimensions[column_letter].width = adjusted_width
 
-        # Head row style & sheet name
+        # head row style & sheet name
         ft = Font(name='Calibri', size=12, bold=True)
-        headRowx = "A1:F1"
+        headRowx = "A1:E1"
         for row in ws[headRowx]:
             for cell in row:
                 cell.font = ft
@@ -133,19 +151,19 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Tenants", ref=f"A1:F{len(tenants)+1}")
+        tab = Table(displayName="Tenants", ref=f"A1:E{len(tenants)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
         ws.add_table(tab)
 
-        # Save to file
+        # save to file
         self.log_info(f"Saving file: {savePath}")
         wb.close()
         wb.save(savePath)
         self.log_success(f"File exported successfully.")
 
-        # Export to SFTP ?
+        # export to SFTP ?
         # https://stackoverflow.com/questions/33751854/upload-file-via-sftp-with-python#73432631
         # import paramiko
         #
