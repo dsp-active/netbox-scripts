@@ -93,15 +93,15 @@ class ExportAllVMResourcesToXLSX(Script):
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
                     # value handling
-                    if vm.vcpus == 0.00 or vm.vcpus == "None":
+                    if vm.vcpus == 0.00 or vm.vcpus is None:
                         vcpusX = 0.00
                     else:
                         vcpusX = vm.vcpus
-                    if vm.memory == 0 or vm.memory == "None":
+                    if vm.memory == 0 or vm.memory is None:
                         memoryX = 0
                     else:
                         memoryX = round(vm.memory/1024)
-                    if vm.disk == 0 or vm.disk == "None":
+                    if vm.disk == 0 or vm.disk is None:
                         diskX = 0
                     else:
                         diskX = round(vm.disk/1000)
