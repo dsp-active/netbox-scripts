@@ -79,6 +79,9 @@ class ExportAllVMResourcesToXLSX(Script):
             tenants.append(TenantCalc(tenant.id, tenant.name))
         #tenants = tenants.reverse() # reverse order -> NOPE, breaks typing ^^
         tenants = list(reversed(tenants))
+        if len(tenants) == 0:
+            self.log_failure(f"No tenants / mandates found! Script will be terminated.")
+            quit()
         self.log_info(f"Tenants collected.")
 
         # iterate through active VMs and add resources to tenant + application pairs
@@ -89,7 +92,20 @@ class ExportAllVMResourcesToXLSX(Script):
             app = app.split('Application=')[1].split(',')[0]
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
-                    applications.append(Application(tenant.get_name(), app, vm.name, vm.vcpus, round(vm.memory/1024), round(vm.disk/1000)))
+                    # value handling
+                    if vm.vcpus == 0.00 or vm.vcpus == "None":
+                        vcpusX = 0.00
+                    else:
+                        vcpusX = vm.vcpus
+                    if vm.memory == 0 or vm.memory == "None":
+                        memoryX = 0
+                    else:
+                        memoryX = round(vm.memory/1024)
+                    if vm.disk == 0 or vm.disk == "None":
+                        diskX = 0
+                    else:
+                        diskX = round(vm.disk/1000)
+                    applications.append(Application(tenant.get_name(), app, vm.name, vcpusX, memoryX, diskX))
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
