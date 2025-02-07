@@ -129,26 +129,26 @@ class ExportAllVMResourcesToXLSX(Script):
                     else:
                         descX = vm.description
                     applications.append(Application(tenant.get_name(), app, str(vm.site), vm.name, str(vm.cluster), roleX,
-                                                    platformX, descX, vcpusX, memoryX, diskX)) # New Values
+                                                    platformX, vcpusX, memoryX, diskX, descX)) # New Values
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "Application", "Site", "Virtual Machine", "Cluster", "Role", "Platform", "Description",
-                   "vCores (per core)", "RAM (per MB)", "Storage (per GB)"]
+        headRow = ["Tenant", "Application", "Site", "Virtual Machine", "Cluster", "Role", "Platform",
+                   "vCores (per core)", "RAM (per MB)", "Storage (per GB)", "Description"]
         ws.append(headRow)
         for app in applications:
             ws.append([app.get_tenant(),app.get_name(),app.get_site(),app.get_vm(),app.get_cluster(),app.get_role(),
-                       app.get_platform(),app.get_desc(),app.get_cores(),app.get_ram(),app.get_storage()])
+                       app.get_platform(),app.get_cores(),app.get_ram(),app.get_storage(),app.get_desc()])
 
         # last row + styling & mark functions as such to prevent errors
         emptyRow = ["", "", "", "", "", "", "", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["", "", "", "", "", "", "", "Gesamt:",
+        bottomRow = ["", "", "", "", "", "", "Gesamt:",
                      f"=SUBTOTAL(9,Resources[vCores (per core)])",
                      f"=SUBTOTAL(9,Resources[RAM (per MB)])",
-                     f"=SUBTOTAL(9,Resources[Storage (per GB)])"]
+                     f"=SUBTOTAL(9,Resources[Storage (per GB)])", ""]
         ws.append(bottomRow)
         lastRow = f"A{ws.max_row}:K{ws.max_row}"
         for row in ws[lastRow]:
