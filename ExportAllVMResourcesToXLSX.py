@@ -116,11 +116,11 @@ class ExportAllVMResourcesToXLSX(Script):
                         diskX = 0
                     else:
                         diskX = round(vm.disk/1000)
-                    if vm.role == "" or vm.site is None:
+                    if str(vm.role) == "" or vm.site is None:
                         roleX = "None"
                     else:
-                        roleX = vm.role
-                    if vm.platform == "" or vm.platform is None:
+                        roleX = str(vm.role)
+                    if str(vm.platform) == "" or vm.platform is None:
                         platformX = "None"
                     else:
                         platformX = vm.platform
