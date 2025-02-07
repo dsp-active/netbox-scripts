@@ -26,33 +26,40 @@ savePath = os.path.join('/opt/netbox/netbox/media',filename)
 # --------------------
 
 class Application:
-     def __init__(self, tenant, name, vm, cores, ram, storage):
+     def __init__(self, tenant, name, site, vm, cluster, role, platform, desc, cores, ram, storage):
          self.tenant = tenant
          self.name = name
+         self.site = site
          self.vm = vm
+         self.cluster = cluster
+         self.role = role
+         self.platform = platform
+         self.desc = desc
          self.cores = cores
          self.ram = ram
          self.storage = storage
      def get_tenant(self):
          return self.tenant
-     def set_tenant(self,tenant):
-         self.tenant = tenant
      def get_name(self):
          return self.name
+     def get_site(self):
+         return self.site
      def get_vm(self):
          return self.vm
+     def get_cluster(self):
+         return self.cluster
+     def get_role(self):
+         return self.role
+     def get_platform(self):
+         return self.platform
+     def get_desc(self):
+         return self.desc
      def get_cores(self):
          return self.cores
-     def set_cores(self, cores):
-         self.cores = cores
      def get_ram(self):
          return self.ram
-     def set_ram(self, ram):
-         self.ram = ram
      def get_storage(self):
          return self.storage
-     def set_storage(self,storage):
-         self.storage = storage
 
 class TenantCalc:
     def __init__(self, id, name):
@@ -100,29 +107,50 @@ class ExportAllVMResourcesToXLSX(Script):
                     if vm.memory == 0 or vm.memory is None:
                         memoryX = 0
                     else:
-                        memoryX = round(vm.memory/1024)
+                        #if vm.memory % 1024 != 0:
+                        #    memoryX = round(vm.memory/1000)
+                        #else:
+                        #    memoryX = round(vm.memory/1024)
+                        memoryX = vm.memory # as is
                     if vm.disk == 0 or vm.disk is None:
                         diskX = 0
                     else:
                         diskX = round(vm.disk/1000)
-                    applications.append(Application(tenant.get_name(), app, vm.name, vcpusX, memoryX, diskX))
+                    if vm.role == "" or vm.site is None:
+                        roleX = "None"
+                    else:
+                        roleX = vm.role
+                    if vm.platform == "" or vm.platform is None:
+                        platformX = "None"
+                    else:
+                        platformX = vm.platform
+                    if vm.description == "" or vm.description is None:
+                        descX = "None"
+                    else:
+                        descX = vm.description
+                    applications.append(Application(tenant.get_name(), app, vm.site, vm.name, vm.cluster, roleX,
+                                                    platformX, descX, vcpusX, memoryX, diskX)) # New Values
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "Application", "VM-Name", "vCores (per core)", "RAM (per GB)", "Storage (per GB)"]
+        headRow = ["Tenant", "Application", "Site", "Virtual Machine", "Cluster", "Role", "Platform", "Description",
+                   "vCores (per core)", "RAM (per MB)", "Storage (per GB)"]
         ws.append(headRow)
         for app in applications:
-            ws.append([app.get_tenant(),app.get_name(),app.get_vm(),app.get_cores(),app.get_ram(),app.get_storage()])
+            ws.append([app.get_tenant(),app.get_name(),app.get_site(),app.get_vm(),app.get_cluster(),app.get_role(),
+                       app.get_platform(),app.get_desc(),app.get_cores(),app.get_ram(),app.get_storage()])
 
         # last row + styling & mark functions as such to prevent errors
-        emptyRow = ["", "", "", "", "", ""] # dumb but it looks better (:
+        emptyRow = ["", "", "", "", "", "", "", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["Gesamt:", "", "", f"=SUBTOTAL(9,Resources[vCores (per core)])", f"=SUBTOTAL(9,Resources[RAM (per GB)])",
+        bottomRow = ["", "", "", "", "", "", "", "Gesamt:",
+                     f"=SUBTOTAL(9,Resources[vCores (per core)])",
+                     f"=SUBTOTAL(9,Resources[RAM (per MB)])",
                      f"=SUBTOTAL(9,Resources[Storage (per GB)])"]
         ws.append(bottomRow)
-        lastRow = f"A{ws.max_row}:F{ws.max_row}"
+        lastRow = f"A{ws.max_row}:K{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
                 cell.font = Font(bold=True)
@@ -136,12 +164,12 @@ class ExportAllVMResourcesToXLSX(Script):
             for cell in column:
                 if len(str(cell.value)) > max_length and not str(cell.value).startswith('='):
                     max_length = len(cell.value)
-            adjusted_width = (max_length + 2) * 1.2
+            adjusted_width = (max_length + 2) * 1.1
             ws.column_dimensions[column_letter].width = adjusted_width
 
         # head row style & sheet name
         ft = Font(name='Calibri', size=12, bold=True, color='ffece9e4') # color = argb hex value
-        headRowx = "A1:F1"
+        headRowx = "A1:K1"
         for row in ws[headRowx]:
             for cell in row:
                 cell.font = ft
@@ -149,7 +177,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Resources", ref=f"A1:F{len(applications)+1}")
+        tab = Table(displayName="Resources", ref=f"A1:K{len(applications)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
