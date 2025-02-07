@@ -120,15 +120,15 @@ class ExportAllVMResourcesToXLSX(Script):
                         roleX = "None"
                     else:
                         roleX = vm.role
-                    if vm.platform.name == "" or vm.platform.name is None:
+                    if vm.platform == "" or vm.platform is None:
                         platformX = "None"
                     else:
-                        platformX = vm.platform.name
+                        platformX = vm.platform
                     if vm.description == "" or vm.description is None:
                         descX = "None"
                     else:
                         descX = vm.description
-                    applications.append(Application(tenant.get_name(), app, vm.site.name, vm.name, vm.cluster.name, roleX,
+                    applications.append(Application(tenant.get_name(), app, str(vm.site), vm.name, vm.cluster, roleX,
                                                     platformX, descX, vcpusX, memoryX, diskX)) # New Values
         self.log_info(f"Resources collected.")
 
