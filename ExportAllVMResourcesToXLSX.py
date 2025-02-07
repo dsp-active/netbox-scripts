@@ -123,7 +123,7 @@ class ExportAllVMResourcesToXLSX(Script):
                     if str(vm.platform) == "" or vm.platform is None:
                         platformX = "None"
                     else:
-                        platformX = vm.platform
+                        platformX = str(vm.platform)
                     if vm.description == "" or vm.description is None:
                         descX = "None"
                     else:
