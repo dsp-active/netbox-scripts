@@ -129,7 +129,7 @@ class ExportAllVMResourcesToXLSX(Script):
                     else:
                         descX = vm.description
                     applications.append(Application(tenant.get_name(), app, str(vm.site), vm.name, str(vm.cluster), roleX,
-                                                    platformX, vcpusX, memoryX, diskX, descX)) # New Values
+                                                    platformX, descX, vcpusX, memoryX, diskX)) # New Values
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
