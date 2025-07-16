@@ -26,9 +26,10 @@ savePath = os.path.join('/opt/netbox/netbox/media',filename)
 # --------------------
 
 class Application:
-     def __init__(self, tenant, name, site, vm, cluster, role, platform, desc, cores, ram, storage):
+     def __init__(self, tenant, name, cost, site, vm, cluster, role, platform, desc, cores, ram, storage):
          self.tenant = tenant
-         self.name = name
+         self.name = name # = app
+         self.cost = cost
          self.site = site
          self.vm = vm
          self.cluster = cluster
@@ -42,6 +43,8 @@ class Application:
          return self.tenant
      def get_name(self):
          return self.name
+     def get_cost(self):
+         return self.cost
      def get_site(self):
          return self.site
      def get_vm(self):
@@ -91,12 +94,13 @@ class ExportAllVMResourcesToXLSX(Script):
             quit()
         self.log_info(f"Tenants collected.")
 
-        # iterate through active VMs and add resources to tenant + application pairs
+        # iterate through active VMs (and add resources to tenant + application pairs -> Nope)
         applications = []
         for vm in VirtualMachine.objects.filter(status=VirtualMachineStatusChoices.STATUS_ACTIVE):
             customData = vm.get_custom_fields()
-            app = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
-            app = app.split('Application=')[1].split(',')[0]
+            splits = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
+            app = splits.split('Application=')[1].split(',')[0]
+            cost = splits.split('Cost center=')[1].split(',')[0]
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
                     # value handling
@@ -128,29 +132,29 @@ class ExportAllVMResourcesToXLSX(Script):
                         descX = "None"
                     else:
                         descX = vm.description
-                    applications.append(Application(tenant.get_name(), app, str(vm.site), vm.name, str(vm.cluster), roleX,
-                                                    platformX, descX, vcpusX, memoryX, diskX)) # New Values
+                    applications.append(Application(tenant.get_name(), app, cost, str(vm.site), vm.name, str(vm.cluster),
+                                                    roleX, platformX, descX, vcpusX, memoryX, diskX)) # New Values
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
         wb = Workbook()
         ws = wb.active
-        headRow = ["Tenant", "Application", "Site", "Virtual Machine", "Cluster", "Role", "Platform",
+        headRow = ["Tenant", "Application", "Cost Center", "Site", "Virtual Machine", "Cluster", "Role", "Platform",
                    "vCores (per core)", "RAM (per MB)", "Storage (per GB)", "Description"]
         ws.append(headRow)
         for app in applications:
-            ws.append([app.get_tenant(),app.get_name(),app.get_site(),app.get_vm(),app.get_cluster(),app.get_role(),
+            ws.append([app.get_tenant(),app.get_name(),app.get_cost(),app.get_site(),app.get_vm(),app.get_cluster(),app.get_role(),
                        app.get_platform(),app.get_cores(),app.get_ram(),app.get_storage(),app.get_desc()])
 
         # last row + styling & mark functions as such to prevent errors
-        emptyRow = ["", "", "", "", "", "", "", "", "", "", ""] # dumb but it looks better (:
+        emptyRow = ["", "", "", "", "", "", "", "", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["", "", "", "", "", "", "Gesamt:",
+        bottomRow = ["", "", "", "", "", "", "", "Gesamt:",
                      f"=SUBTOTAL(9,Resources[vCores (per core)])",
                      f"=SUBTOTAL(9,Resources[RAM (per MB)])",
                      f"=SUBTOTAL(9,Resources[Storage (per GB)])", ""]
         ws.append(bottomRow)
-        lastRow = f"A{ws.max_row}:K{ws.max_row}"
+        lastRow = f"A{ws.max_row}:L{ws.max_row}"
         for row in ws[lastRow]:
             for cell in row:
                 cell.font = Font(bold=True)
@@ -164,12 +168,12 @@ class ExportAllVMResourcesToXLSX(Script):
             for cell in column:
                 if len(str(cell.value)) > max_length and not str(cell.value).startswith('='):
                     max_length = len(cell.value)
-            adjusted_width = (max_length + 2) * 1.1
+            adjusted_width = (max_length + 2) * 1.05
             ws.column_dimensions[column_letter].width = adjusted_width
 
         # head row style & sheet name
         ft = Font(name='Calibri', size=12, bold=True, color='ffece9e4') # color = argb hex value
-        headRowx = "A1:K1"
+        headRowx = "A1:L1"
         for row in ws[headRowx]:
             for cell in row:
                 cell.font = ft
@@ -177,7 +181,7 @@ class ExportAllVMResourcesToXLSX(Script):
         ws.title = sheetName
 
         # [UPDATE] format as table // https://openpyxl.readthedocs.io/en/3.1.3/worksheet_tables.html
-        tab = Table(displayName="Resources", ref=f"A1:K{len(applications)+1}")
+        tab = Table(displayName="Resources", ref=f"A1:L{len(applications)+1}")
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=False)
         tab.tableStyleInfo = style
