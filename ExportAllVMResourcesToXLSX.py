@@ -13,8 +13,14 @@ import os
 
 # --------------------
 
+# file
 filename = "NetboxOut_" + str(datetime.datetime.now().strftime("%Y-%m")) + '.xlsx'
 savePath = os.path.join('/opt/netbox/netbox/media',filename)
+
+# prices
+priceCpu = 10.45
+priceRam = 4.14
+priceStrg = 0.21
 
 # ___VM attributes___
 # Choices are: _name, bookmarks, cluster, cluster_id, comments, config_template, config_template_id, contacts, created, \
@@ -81,6 +87,16 @@ class ExportAllVMResourcesToXLSX(Script):
 
     # --------------------
 
+    @staticmethod
+    def last_row_to_function(workbook, maxrow):
+        ws = workbook
+        lastRow = f"A{ws.max_row}:{maxrow}{ws.max_row}"
+        for row in ws[lastRow]:
+            for cell in row:
+                cell.font = Font(bold=True)
+                if str(cell.value).startswith('='):
+                    cell.data_type = 'f'
+
     def run(self, data, commit):
 
         # tenants to list
@@ -101,6 +117,8 @@ class ExportAllVMResourcesToXLSX(Script):
             splits = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
             app = splits.split('Application=')[1].split(',')[0]
             cost = splits.split('Cost center=')[1].split(',')[0]
+            if cost != 'None':
+                cost = int(cost)
             for tenant in tenants:
                 if vm.tenant_id == tenant.get_id():
                     # value handling
@@ -111,11 +129,11 @@ class ExportAllVMResourcesToXLSX(Script):
                     if vm.memory == 0 or vm.memory is None:
                         memoryX = 0
                     else:
-                        #if vm.memory % 1024 != 0:
-                        #    memoryX = round(vm.memory/1000)
-                        #else:
-                        #    memoryX = round(vm.memory/1024)
-                        memoryX = vm.memory # as is
+                        if vm.memory % 1024 != 0:
+                            memoryX = round(vm.memory/1000)
+                        else:
+                            memoryX = round(vm.memory/1024)
+                        # memoryX = vm.memory
                     if vm.disk == 0 or vm.disk is None:
                         diskX = 0
                     else:
@@ -133,33 +151,50 @@ class ExportAllVMResourcesToXLSX(Script):
                     else:
                         descX = vm.description
                     applications.append(Application(tenant.get_name(), app, cost, str(vm.site), vm.name, str(vm.cluster),
-                                                    roleX, platformX, descX, vcpusX, memoryX, diskX)) # New Values
+                                                    roleX, platformX, descX, vcpusX, memoryX, diskX))
         self.log_info(f"Resources collected.")
 
         # setup Workbook for Excel output & add data
         wb = Workbook()
         ws = wb.active
         headRow = ["Tenant", "Application", "Cost Center", "Site", "Virtual Machine", "Cluster", "Role", "Platform",
-                   "vCores (per core)", "RAM (per MB)", "Storage (per GB)", "Description"]
+                   "vCores (per core)", "RAM (per GB)", "Storage (per GB)", "Description"]
         ws.append(headRow)
         for app in applications:
-            ws.append([app.get_tenant(),app.get_name(),app.get_cost(),app.get_site(),app.get_vm(),app.get_cluster(),app.get_role(),
-                       app.get_platform(),app.get_cores(),app.get_ram(),app.get_storage(),app.get_desc()])
+            ws.append([app.get_tenant(),app.get_name(),app.get_cost(),app.get_site(),app.get_vm(),app.get_cluster(),
+                       app.get_role(), app.get_platform(),app.get_cores(),app.get_ram(),app.get_storage(),app.get_desc()])
 
         # last row + styling & mark functions as such to prevent errors
         emptyRow = ["", "", "", "", "", "", "", "", "", "", "", ""] # dumb but it looks better (:
         ws.append(emptyRow)
-        bottomRow = ["", "", "", "", "", "", "", "Gesamt:",
+        bottomRow = ["", "", "", "", "", "", "", "Gesamtanzahl:",
                      f"=SUBTOTAL(9,Resources[vCores (per core)])",
-                     f"=SUBTOTAL(9,Resources[RAM (per MB)])",
+                     f"=SUBTOTAL(9,Resources[RAM (per GB)])",
                      f"=SUBTOTAL(9,Resources[Storage (per GB)])", ""]
         ws.append(bottomRow)
-        lastRow = f"A{ws.max_row}:L{ws.max_row}"
-        for row in ws[lastRow]:
-            for cell in row:
-                cell.font = Font(bold=True)
-                if str(cell.value).startswith('='):
-                    cell.data_type = 'f'
+        # lastRow = f"A{ws.max_row}:L{ws.max_row}" # ---> AS FUNCTION CALL
+        # for row in ws[lastRow]:
+        #     for cell in row:
+        #         cell.font = Font(bold=True)
+        #         if str(cell.value).startswith('='):
+        #             cell.data_type = 'f'
+
+        # additional rows for subtotal calculations with pricing
+        bottomRow2 = ["", "", "", "", "", "", "", "Einzelpreis:",
+                     priceCpu,priceRam,priceStrg,""]
+        ws.append(bottomRow2)
+        bottomRow3 = ["", "", "", "", "", "", "", "Teilsumme:",
+                      f"=OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -1, 0) * OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -2, 0)",
+                      f"==OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -1, 0) * OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -2, 0)",
+                      f"==OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -1, 0) * OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -2, 0)",
+                      ""]
+        ws.append(bottomRow3)
+        self.last_row_to_function(ws,'L')
+        bottomRow4 = ["", "", "", "", "", "", "", "Gesamtsumme:",
+                      f"=OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -1, 0) + OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -1, 1) + OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN())), -1, 2)" ,
+                      "", "", ""]
+        ws.append(bottomRow4)
+        self.last_row_to_function(ws, 'L')
 
         # change column widths
         for column in ws.columns:
@@ -203,3 +238,5 @@ class ExportAllVMResourcesToXLSX(Script):
         #     sftp = ssh.open_sftp()
         #     sftp.chdir('public')
         #     sftp.put('C:\Users\XXX\Dropbox\test.txt', 'test.txt')
+
+
