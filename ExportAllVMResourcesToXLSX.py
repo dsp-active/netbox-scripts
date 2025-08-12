@@ -3,6 +3,7 @@ from extras.scripts import *
 from virtualization.models import VirtualMachine
 from virtualization.choices import VirtualMachineStatusChoices
 from tenancy.models import Tenant
+from extras.models import CustomFieldChoiceSet
 
 from openpyxl import Workbook
 from openpyxl.styles import Font, colors
@@ -110,6 +111,12 @@ class ExportAllVMResourcesToXLSX(Script):
             quit()
         self.log_info(f"Tenants collected.")
 
+        # app display name lookup table
+        appLookup = []
+        for choiceSet in CustomFieldChoiceSet.objects.filter(name='application'):
+            for choice in choiceSet.choices:
+                appLookup.append(choice)
+
         # iterate through active VMs (and add resources to tenant + application pairs -> Nope)
         applications = []
         for vm in VirtualMachine.objects.filter(status=VirtualMachineStatusChoices.STATUS_ACTIVE):
@@ -117,6 +124,12 @@ class ExportAllVMResourcesToXLSX(Script):
             splits = ", ".join("=".join((str(k), str(v))) for k, v in customData.items())
             app = splits.split('Application=')[1].split(',')[0]
             cost = splits.split('Cost center=')[1].split(',')[0]
+
+            # app -> Label
+            for entry in appLookup:
+                if app == entry[0]:
+                    app = entry[1]
+
             if cost != 'None':
                 cost = int(cost)
             for tenant in tenants:
